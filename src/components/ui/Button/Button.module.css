@@ -1,0 +1,24 @@
+.button {
+  background-color: var(--neon);
+  color: white;
+  border: var(--border) var(--neon);
+  box-shadow: var(--box-shadow) var(--neon);
+  backdrop-filter: var(--backdrop-filter);
+  height: 50px;
+  padding: 10px 10px;
+  outline: 1px solid var(--neon);
+  outline-offset: 3px;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.button:hover {
+  outline-offset: 0px;
+  outline: 3px solid var(--neon);
+}
+
+.button:active {
+  transform: scale(0.95);
+}
