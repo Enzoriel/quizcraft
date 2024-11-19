@@ -1,9 +1,9 @@
 "use client";
 import styles from "./Button.module.css";
 
-const Button = ({ title }) => {
+const Button = ({ title, onClick, className }) => {
   return (
-    <button className={styles.button} onClick={() => alert("Hola")}>
+    <button className={`${styles.button} ${className || ""}`} onClick={onClick}>
       {title}
     </button>
   );

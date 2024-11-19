@@ -6,8 +6,8 @@
   backdrop-filter: var(--backdrop-filter);
   height: 50px;
   padding: 10px 10px;
-  outline: 1px solid var(--neon);
-  outline-offset: 3px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
   font-size: 1.5rem;
   border-radius: 10px;
   cursor: pointer;
@@ -15,8 +15,8 @@
 }
 
 .button:hover {
-  outline-offset: 0px;
-  outline: 3px solid var(--neon);
+  outline: 1px solid rgba(59, 255, 255, 0.473);
+  background-color: rgba(59, 255, 255, 0.473);
 }
 
 .button:active {

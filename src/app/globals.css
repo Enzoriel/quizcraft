@@ -19,13 +19,16 @@ h5,
 h6,
 input,
 button,
-span {
+span,
+th,
+td,
+div {
   margin: 0;
   padding: 0;
   color: white;
   list-style: none;
-  font-family: "Baumans", system-ui;
-  font-weight: 400;
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 500;
   font-style: normal;
 }
 
