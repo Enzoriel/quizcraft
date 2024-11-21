@@ -1,8 +1,10 @@
 import Header from "@/components/layout/Header";
 import styles from "./TenMax.module.css";
 import Button from "@/components/ui/Button";
+import { useId } from "react";
 
 const TenMax = () => {
+  const idInput = useId();
   return (
     <>
       <Header title="top 10" />
@@ -74,8 +76,8 @@ const TenMax = () => {
           <time className={styles.data_player_timer} dateTime="PT10S" role="timer">
             10
           </time>
-          <label htmlFor="db_jugador" className={styles.input_label}>
-            <input id="db_jugador" type="text" placeholder="Ingrese el nombre del jugador" />
+          <label htmlFor={idInput} className={styles.input_label}>
+            <input id={idInput} type="text" placeholder="Ingrese el nombre del jugador" />
           </label>
           <Button title="Enter" />
           <time className={styles.data_rival_timer} dateTime="PT10S" role="timer">
