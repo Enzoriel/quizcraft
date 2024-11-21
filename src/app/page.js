@@ -1,10 +1,12 @@
-import FormularioJugadores from "@/components/games/Form";
+import FormPlayers from "@/components/games/FormPlayers";
 import styles from "./page.module.css";
+import Header from "@/components/layout/Header";
 
 export default function Home() {
   return (
     <div className={styles.page}>
-      <FormularioJugadores />
+      <Header title={"TEN 10"} />
+      <FormPlayers />
     </div>
   );
 }

@@ -9,6 +9,7 @@
   justify-content: center;
   align-items: center;
   position: sticky;
+  margin-bottom: 20px;
 }
 
 .title {
@@ -16,4 +17,5 @@
   color: white;
   text-transform: uppercase;
   letter-spacing: 0.1rem;
+  font-weight: 700;
 }
