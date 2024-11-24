@@ -12,6 +12,7 @@ const FormPlayers = () => {
   const [formCount, setFormCount] = useState(0);
   const [formHistory, setFormHistory] = useState([]);
   const [data, setData] = useState([]);
+  const [viewPlayers, setViewPlayers] = useState(false);
 
   const handleInputChange = (index, value) => {
     const newPlayers = [...players];
@@ -80,6 +81,10 @@ const FormPlayers = () => {
     }
     return null;
   };
+
+  function clickeable(){
+    viewPlayers === true ? setViewPlayers(false) : setViewPlayers(true);
+  }
 
   return (
     <>
@@ -165,6 +170,7 @@ const FormPlayers = () => {
                 <h2>{data.gameName}</h2>
                 <svg
                   className={styles.accordion_button}
+                  onClick={clickeable}
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="none"
@@ -175,13 +181,14 @@ const FormPlayers = () => {
                 >
                   <path d="M3 12h18M3 6h18M3 18h18" />
                 </svg>
-                <ul className={styles.gameDataPlayers}>
+                {viewPlayers && (  <ul className={styles.gameDataPlayers}>
                   {players.map((player, index) => (
                     <li key={index}>
                       {index + 1}. {player}
                     </li>
                   ))}
-                </ul>
+                </ul>)}
+              
               </div>
             );
           })}
