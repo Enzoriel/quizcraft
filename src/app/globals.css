@@ -34,13 +34,11 @@ div {
 
 body {
   margin: 0;
-  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   position: relative;
   background: rgb(5, 5, 5);
-  overflow: hidden;
 }
 
 h2 {
@@ -77,4 +75,20 @@ h2 {
   filter: blur(30px);
   border-radius: 50%;
   background: radial-gradient(circle 400px at 50% 300px, rgba(251, 251, 251, 0.21), rgb(34, 34, 34));
+}
+
+.accept:hover {
+  background-color: rgb(63, 145, 63);
+  outline: 1px solid rgba(63, 145, 63);
+  border: 1px solid rgba(63, 145, 63);
+  box-shadow: var(--box-shadow) rgba(63, 145, 63);
+  color: white;
+}
+
+.cancel:hover {
+  background-color: rgb(122, 49, 49);
+  outline: 1px solid rgb(122, 49, 49);
+  border: 1px solid rgb(122, 49, 49);
+  box-shadow: var(--box-shadow) rgb(122, 49, 49);
+  color: white;
 }
