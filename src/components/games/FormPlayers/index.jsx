@@ -1,12 +1,14 @@
 "use client";
 
 import Button from "@/components/ui/Button";
-import React, { useState } from "react";
+import { useState } from "react";
 import styles from "./FormPlayers.module.css";
+import Modal from "@/components/ui/Modal";
 
 const FormPlayers = () => {
   const [players, setPlayers] = useState(["", "", "", "", ""]);
   const [nameGame, setNameGame] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleInputChange = (index, value) => {
     const newPlayers = [...players];
@@ -15,15 +17,10 @@ const FormPlayers = () => {
   };
 
   const addField = () => {
-    if (players.length === 10) {
-      alert("No se pueden agregar más jugadores");
-      return;
-    }
     setPlayers([...players, ""]);
   };
 
   const deleteField = (index) => {
-    if (index <= 4) return alert("No se puede tener menos de 5 jugadores");
     const newPlayers = [...players];
     newPlayers.splice(index, 1);
     setPlayers(newPlayers);
@@ -33,6 +30,31 @@ const FormPlayers = () => {
     e.preventDefault();
     const game = { [nameGame]: players };
     console.log(game);
+  };
+
+  const renderModal = () => {
+    if (isModalOpen) {
+      if (players.length === 10) {
+        return (
+          <Modal
+            title={"No se pueden añadir más"}
+            titleButton={"Confirmar"}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
+        );
+      } else if (players.length === 5) {
+        return (
+          <Modal
+            title={"No se pueden eliminar más"}
+            titleButton={"Confirmar"}
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
+        );
+      }
+    }
+    return null;
   };
 
   return (
@@ -78,16 +100,35 @@ const FormPlayers = () => {
         ))}
       </section>
       <div className={styles.actions}>
-        <Button type="button" title={"Añadir jugador"} onClick={addField} className={styles.button} />
+        <Button
+          type="button"
+          title={"Añadir jugador"}
+          onClick={() => {
+            if (players.length < 10) {
+              addField();
+            } else {
+              setIsModalOpen(true);
+            }
+          }}
+          className={styles.button}
+        />
         <Button
           type="button"
           title={"Eliminar jugador"}
-          onClick={() => deleteField(players.length - 1)}
+          onClick={() => {
+            if (players.length > 5) {
+              deleteField(players.length - 1);
+            }
+            if (players.length === 5) {
+              setIsModalOpen(true);
+            }
+          }}
           className={styles.button}
         />
 
         <Button title={"Enviar"} type="submit" className={styles.button} />
       </div>
+      {renderModal()}
     </form>
   );
 };

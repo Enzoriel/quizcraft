@@ -3,7 +3,7 @@
 import Button from "../Button";
 import styles from "./Modal.module.css";
 
-const Modal = ({ isOpen, onClose, children, title }) => {
+const Modal = ({ isOpen, onClose, children, title, titleButton, activeSecButton = false, titleSecButton }) => {
   if (!isOpen) return null;
   return (
     <div className={styles.modal_overlay} onClick={onClose}>
@@ -19,8 +19,8 @@ const Modal = ({ isOpen, onClose, children, title }) => {
         <h2 className={styles.modal_title}>{title}</h2>
         {children}
         <div className={styles.modal_button}>
-          <Button title={"Aceptar"} className={styles.accept} />
-          <Button title={"Cancelar"} className={styles.cancel} onClick={onClose} />
+          <Button title={titleButton} onClick={onClose} />
+          {activeSecButton && <Button title={"Cancelar"} className={styles.cancel} onClick={onClose} />}
         </div>
       </div>
     </div>
