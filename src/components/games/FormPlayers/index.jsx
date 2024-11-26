@@ -12,7 +12,7 @@ const FormPlayers = () => {
   const [formCount, setFormCount] = useState(0);
   const [formHistory, setFormHistory] = useState([]);
   const [data, setData] = useState([]);
-  const [viewPlayers, setViewPlayers] = useState(false);
+  const [viewPlayers, setViewPlayers] = useState([false]);
 
   const handleInputChange = (index, value) => {
     const newPlayers = [...players];
@@ -34,11 +34,9 @@ const FormPlayers = () => {
     e.preventDefault();
     setData([...data, { gameName: nameGame, players: players }]);
     console.log(data);
-
     setFormHistory([...formHistory, { nameGame, players }]);
-
     setFormCount(formCount + 1);
-
+    setViewPlayers([...viewPlayers, false]);
     setPlayers(["", "", "", "", ""]);
     setNameGame("");
   };
@@ -49,6 +47,7 @@ const FormPlayers = () => {
       setPlayers(previousForm.players);
       setNameGame(previousForm.nameGame);
       setFormHistory(formHistory.slice(0, formCount - 1));
+      setViewPlayers(viewPlayers.slice(0, formCount - 1));
       setData(data.slice(0, formCount - 1));
       setFormCount(formCount - 1);
     }
@@ -82,8 +81,10 @@ const FormPlayers = () => {
     return null;
   };
 
-  function clickeable(){
-    viewPlayers === true ? setViewPlayers(false) : setViewPlayers(true);
+  function clickeable(index) {
+    const newViewPlayers = [...viewPlayers];
+    newViewPlayers[index] = !newViewPlayers[index];
+    setViewPlayers(newViewPlayers);
   }
 
   return (
@@ -161,7 +162,7 @@ const FormPlayers = () => {
           {renderModal()}
         </form>
       )}
-      {data && (
+      {data && data.length > 0 && (
         <div className={styles.displayGameData}>
           {data.map((data, index) => {
             const players = data.players;
@@ -170,7 +171,7 @@ const FormPlayers = () => {
                 <h2>{data.gameName}</h2>
                 <svg
                   className={styles.accordion_button}
-                  onClick={clickeable}
+                  onClick={() => clickeable(index)}
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="none"
@@ -181,14 +182,15 @@ const FormPlayers = () => {
                 >
                   <path d="M3 12h18M3 6h18M3 18h18" />
                 </svg>
-                {viewPlayers && (  <ul className={styles.gameDataPlayers}>
-                  {players.map((player, index) => (
-                    <li key={index}>
-                      {index + 1}. {player}
-                    </li>
-                  ))}
-                </ul>)}
-              
+                {viewPlayers[index] && (
+                  <ul className={styles.gameDataPlayers}>
+                    {players.map((player, index) => (
+                      <li key={index}>
+                        {index + 1}. {player}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             );
           })}
