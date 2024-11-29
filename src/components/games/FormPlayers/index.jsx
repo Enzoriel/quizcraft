@@ -1,18 +1,19 @@
 "use client";
 
 import Button from "@/components/ui/Button";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import styles from "./FormPlayers.module.css";
 import Modal from "@/components/ui/Modal";
 
 const FormPlayers = () => {
   const [players, setPlayers] = useState(["", "", "", "", ""]);
   const [nameGame, setNameGame] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState({ state: false, action: "", index: null });
   const [formCount, setFormCount] = useState(0);
   const [formHistory, setFormHistory] = useState([]);
   const [data, setData] = useState([]);
   const [viewPlayers, setViewPlayers] = useState([false]);
+  const gameDataRef = useRef(null);
 
   const handleInputChange = (index, value) => {
     const newPlayers = [...players];
@@ -53,35 +54,89 @@ const FormPlayers = () => {
     }
   };
 
+  const handleEditChange = (field, indexGame, indexPlayer, value) => {
+    if (field === "gameName") {
+      const newData = [...data];
+      newData[indexGame].gameName = value;
+      setData(newData);
+    }
+    if (field === "players") {
+      const newData = [...data];
+      newData[indexGame].players[indexPlayer] = value;
+      setData(newData);
+    }
+  };
+
   const renderModal = () => {
-    if (isModalOpen) {
-      if (players.length === 10) {
+    if (isModalOpen.state) {
+      if (isModalOpen.action === "errorAddPlayer") {
         return (
           <Modal
             title={"No se pueden añadir más"}
             titleButton={"Confirmar"}
-            isOpen={isModalOpen}
+            isOpen={isModalOpen.state}
             activeButton={true}
-            onClose={() => setIsModalOpen(false)}
+            onClose={() => setIsModalOpen({ state: false, action: "" })}
             className={styles.accept}
           />
         );
-      } else if (players.length === 5) {
+      }
+      if (isModalOpen.action === "errorDeletePlayer") {
         return (
           <Modal
             title={"No se pueden eliminar más"}
             titleButton={"Confirmar"}
-            isOpen={isModalOpen}
+            isOpen={isModalOpen.state}
             activeButton={true}
-            onClose={() => setIsModalOpen(false)}
+            onClose={() => setIsModalOpen({ state: false, action: "" })}
           />
+        );
+      }
+      if (isModalOpen.action === "editPlayer") {
+        return (
+          <Modal
+            title={"Editar ronda"}
+            titleButton={"Guardar"}
+            isOpen={isModalOpen.state}
+            activeButton={true}
+            onClose={() => setIsModalOpen({ state: false, action: "" })}
+          >
+            <form onSubmit={handleSubmit} className={styles.form}>
+              <label className={styles.title}>
+                Título:
+                <input
+                  type="text"
+                  value={data[isModalOpen.index].gameName}
+                  onChange={(e) => handleEditChange("gameName", isModalOpen.index, 0, e.target.value)}
+                  title="Ingrese el logro que deben cumplir los jugadores"
+                  required
+                />
+              </label>
+              <section className={styles.players}>
+                {data[isModalOpen.index].players.map((player, index) => (
+                  <div key={index}>
+                    <label className={styles.input + " " + styles.input_enter}>
+                      Jugador {index + 1}
+                      <input
+                        type="text"
+                        value={player}
+                        onChange={(e) => handleEditChange("players", isModalOpen.index, index, e.target.value)}
+                        title="Ingrese el nombre del jugador"
+                        required
+                      />
+                    </label>
+                  </div>
+                ))}
+              </section>
+            </form>
+          </Modal>
         );
       }
     }
     return null;
   };
 
-  function clickeable(index) {
+  function showPlayers(index) {
     const newViewPlayers = [...viewPlayers];
     newViewPlayers[index] = !newViewPlayers[index];
     setViewPlayers(newViewPlayers);
@@ -89,8 +144,9 @@ const FormPlayers = () => {
 
   return (
     <>
-      {formCount < 10 && (
+      {formCount < 2 && (
         <form onSubmit={handleSubmit} className={styles.form}>
+          <span className={styles.pageNum}>Página {formCount + 1}</span>
           <svg
             onClick={handleRollback}
             className={styles.return_button}
@@ -139,7 +195,7 @@ const FormPlayers = () => {
                 if (players.length < 10) {
                   addField();
                 } else {
-                  setIsModalOpen(true);
+                  setIsModalOpen({ state: true, action: "errorAddPlayer" });
                 }
               }}
               className={styles.button}
@@ -152,27 +208,32 @@ const FormPlayers = () => {
                   deleteField(players.length - 1);
                 }
                 if (players.length === 5) {
-                  setIsModalOpen(true);
+                  setIsModalOpen({ state: true, action: "errorDeletePlayer" });
                 }
               }}
               className={styles.button}
             />
-            <Button title={"Enviar"} type="submit" className={styles.button} />
+            <Button title={"Siguiente"} type="submit" className={styles.button} />
           </div>
-          {renderModal()}
         </form>
       )}
-      {data && data.length > 0 && (
+      {renderModal()}
+      {data && data.length === 2 && (
         <div className={styles.displayGameData}>
+          <h1>Listado de rondas</h1>
           {data.map((data, index) => {
             const players = data.players;
             return (
-              <div key={index} className={styles.gameDataName}>
+              <div key={index} ref={gameDataRef} className={styles.gameDataName}>
                 <h2>{data.gameName}</h2>
                 <svg
-                  className={styles.accordion_button}
-                  onClick={() => clickeable(index)}
                   xmlns="http://www.w3.org/2000/svg"
+                  className={styles.gameDataButton}
+                  onClick={() => {
+                    setIsModalOpen({ state: true, action: "editPlayer", index: index });
+                  }}
+                  width="24"
+                  height="24"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -180,8 +241,35 @@ const FormPlayers = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M3 12h18M3 6h18M3 18h18" />
+                  <title>Editar</title>
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" />
+                  <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" />
+                  <path d="M16 5l3 3" />
                 </svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  onClick={() => showPlayers(index)}
+                  className={styles.gameDataButton}
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <title>Mostrar</title>
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M9 6l11 0" />
+                  <path d="M9 12l11 0" />
+                  <path d="M9 18l11 0" />
+                  <path d="M5 6l0 .01" />
+                  <path d="M5 12l0 .01" />
+                  <path d="M5 18l0 .01" />
+                </svg>
+
                 {viewPlayers[index] && (
                   <ul className={styles.gameDataPlayers}>
                     {players.map((player, index) => (
