@@ -1,151 +1,32 @@
 "use client";
 
 import Button from "@/components/ui/Button";
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import styles from "./FormPlayers.module.css";
-import Modal from "@/components/ui/Modal";
+import FormPlayersModal from "@/components/ui/Modal/FormPlayersModal";
+import { Context } from "@/features/Context";
 
 const FormPlayers = () => {
-  const [players, setPlayers] = useState(["", "", "", "", ""]);
-  const [nameGame, setNameGame] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState({ state: false, action: "", index: null });
-  const [formCount, setFormCount] = useState(0);
-  const [formHistory, setFormHistory] = useState([]);
-  const [data, setData] = useState([]);
-  const [viewPlayers, setViewPlayers] = useState([false]);
   const gameDataRef = useRef(null);
-
-  const handleInputChange = (index, value) => {
-    const newPlayers = [...players];
-    newPlayers[index] = value;
-    setPlayers(newPlayers);
-  };
-
-  const addField = () => {
-    setPlayers([...players, ""]);
-  };
-
-  const deleteField = (index) => {
-    const newPlayers = [...players];
-    newPlayers.splice(index, 1);
-    setPlayers(newPlayers);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setData([...data, { gameName: nameGame, players: players }]);
-    console.log(data);
-    setFormHistory([...formHistory, { nameGame, players }]);
-    setFormCount(formCount + 1);
-    setViewPlayers([...viewPlayers, false]);
-    setPlayers(["", "", "", "", ""]);
-    setNameGame("");
-  };
-
-  const handleRollback = () => {
-    if (formCount > 0) {
-      const previousForm = formHistory[formCount - 1];
-      setPlayers(previousForm.players);
-      setNameGame(previousForm.nameGame);
-      setFormHistory(formHistory.slice(0, formCount - 1));
-      setViewPlayers(viewPlayers.slice(0, formCount - 1));
-      setData(data.slice(0, formCount - 1));
-      setFormCount(formCount - 1);
-    }
-  };
-
-  const handleEditChange = (field, indexGame, indexPlayer, value) => {
-    if (field === "gameName") {
-      const newData = [...data];
-      newData[indexGame].gameName = value;
-      setData(newData);
-    }
-    if (field === "players") {
-      const newData = [...data];
-      newData[indexGame].players[indexPlayer] = value;
-      setData(newData);
-    }
-  };
-
-  const renderModal = () => {
-    if (isModalOpen.state) {
-      if (isModalOpen.action === "errorAddPlayer") {
-        return (
-          <Modal
-            title={"No se pueden añadir más"}
-            titleButton={"Confirmar"}
-            isOpen={isModalOpen.state}
-            activeButton={true}
-            onClose={() => setIsModalOpen({ state: false, action: "" })}
-            className={styles.accept}
-          />
-        );
-      }
-      if (isModalOpen.action === "errorDeletePlayer") {
-        return (
-          <Modal
-            title={"No se pueden eliminar más"}
-            titleButton={"Confirmar"}
-            isOpen={isModalOpen.state}
-            activeButton={true}
-            onClose={() => setIsModalOpen({ state: false, action: "" })}
-          />
-        );
-      }
-      if (isModalOpen.action === "editPlayer") {
-        return (
-          <Modal
-            title={"Editar ronda"}
-            titleButton={"Guardar"}
-            isOpen={isModalOpen.state}
-            activeButton={true}
-            onClose={() => setIsModalOpen({ state: false, action: "" })}
-          >
-            <form onSubmit={handleSubmit} className={styles.form}>
-              <label className={styles.title}>
-                Título:
-                <input
-                  type="text"
-                  value={data[isModalOpen.index].gameName}
-                  onChange={(e) => handleEditChange("gameName", isModalOpen.index, 0, e.target.value)}
-                  title="Ingrese el logro que deben cumplir los jugadores"
-                  required
-                />
-              </label>
-              <section className={styles.players}>
-                {data[isModalOpen.index].players.map((player, index) => (
-                  <div key={index}>
-                    <label className={styles.input + " " + styles.input_enter}>
-                      Jugador {index + 1}
-                      <input
-                        type="text"
-                        value={player}
-                        onChange={(e) => handleEditChange("players", isModalOpen.index, index, e.target.value)}
-                        title="Ingrese el nombre del jugador"
-                        required
-                      />
-                    </label>
-                  </div>
-                ))}
-              </section>
-            </form>
-          </Modal>
-        );
-      }
-    }
-    return null;
-  };
-
-  function showPlayers(index) {
-    const newViewPlayers = [...viewPlayers];
-    newViewPlayers[index] = !newViewPlayers[index];
-    setViewPlayers(newViewPlayers);
-  }
-
+  const {
+    setIsModalOpen,
+    players,
+    formCount,
+    data,
+    viewPlayers,
+    showPlayers,
+    nameGame,
+    setNameGame,
+    handleInputChange,
+    addField,
+    deleteField,
+    handleSubmit,
+    handleRollback,
+  } = useContext(Context);
   return (
     <>
       {formCount < 2 && (
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={(e) => handleSubmit(e)} className={styles.form}>
           <span className={styles.pageNum}>Página {formCount + 1}</span>
           <svg
             onClick={handleRollback}
@@ -217,7 +98,7 @@ const FormPlayers = () => {
           </div>
         </form>
       )}
-      {renderModal()}
+      <FormPlayersModal />
       {data && data.length === 2 && (
         <div className={styles.displayGameData}>
           <h1>Listado de rondas</h1>
